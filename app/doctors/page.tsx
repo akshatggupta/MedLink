@@ -1,97 +1,99 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { useSearchParams } from "next/navigation"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { DoctorFilters } from "@/components/doctor-filters"
-import { DoctorCard } from "@/components/doctor-card"
-import { doctors } from "@/lib/mock-data"
+import { useState } from "react"
+import { doctors, specialties } from "@/lib/mock-data"
+import { DoctorCard } from "@/components/doctors/DoctorCard"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Search, Map, ListFilter } from "lucide-react"
+import { motion } from "framer-motion"
 
 export default function DoctorsPage() {
-  const searchParams = useSearchParams()
-  const initialSpecialty = searchParams.get("specialty") || ""
-
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedSpecialty, setSelectedSpecialty] = useState(initialSpecialty)
-  const [minRating, setMinRating] = useState(0)
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null)
 
-  // Filter and search doctors
-  const filteredDoctors = useMemo(() => {
-    return doctors.filter((doctor) => {
-      const matchesSearch =
-        doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doctor.location.toLowerCase().includes(searchQuery.toLowerCase())
-
-      const matchesSpecialty = !selectedSpecialty || doctor.specialty === selectedSpecialty
-
-      const matchesRating = doctor.rating >= minRating
-
-      return matchesSearch && matchesSpecialty && matchesRating
-    })
-  }, [searchQuery, selectedSpecialty, minRating])
-
-  const handleReset = () => {
-    setSearchQuery("")
-    setSelectedSpecialty("")
-    setMinRating(0)
-  }
+  const filteredDoctors = doctors.filter((doctor) => {
+    const matchesSearch = doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSpecialty = selectedSpecialty ? doctor.specialty === selectedSpecialty : true
+    return matchesSearch && matchesSpecialty
+  })
 
   return (
-    <>
-      <Header />
-      <main className="min-h-screen bg-muted/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Find a Doctor</h1>
-            <p className="text-muted-foreground">Browse our network of qualified healthcare professionals</p>
+    <div className="min-h-screen bg-slate-50 pb-20">
+      {/* Header */}
+      <div className="bg-white border-b border-slate-200 pt-24 pb-8 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-6xl">
+          <h1 className="text-3xl font-bold text-slate-900 mb-6">Find a Specialist</h1>
+
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-grow">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <Input
+                placeholder="Search by doctor name or specialty..."
+                className="pl-10 h-12 text-lg"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <Button variant="outline" className="h-12 px-6 gap-2">
+              <ListFilter className="w-4 h-4" />
+              Filters
+            </Button>
+            <Button variant="outline" className="h-12 px-6 gap-2">
+              <Map className="w-4 h-4" />
+              Map View
+            </Button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Filters Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-20">
-                <DoctorFilters
-                  searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery}
-                  selectedSpecialty={selectedSpecialty}
-                  onSpecialtyChange={setSelectedSpecialty}
-                  minRating={minRating}
-                  onMinRatingChange={setMinRating}
-                  onReset={handleReset}
-                />
-              </div>
-            </div>
-
-            {/* Doctors Grid */}
-            <div className="lg:col-span-3">
-              {filteredDoctors.length > 0 ? (
-                <>
-                  <div className="mb-6">
-                    <p className="text-muted-foreground">
-                      Showing {filteredDoctors.length} doctor{filteredDoctors.length !== 1 ? "s" : ""}
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {filteredDoctors.map((doctor) => (
-                      <DoctorCard key={doctor.id} doctor={doctor} />
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-lg text-muted-foreground mb-4">No doctors found matching your criteria</p>
-                  <button onClick={handleReset} className="text-primary hover:underline font-semibold">
-                    Clear filters and try again
-                  </button>
-                </div>
-              )}
-            </div>
+          {/* Specialty Tags */}
+          <div className="flex gap-2 mt-6 overflow-x-auto pb-2 scrollbar-hide">
+            <button
+              onClick={() => setSelectedSpecialty(null)}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedSpecialty === null
+                  ? "bg-blue-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+            >
+              All Specialties
+            </button>
+            {specialties.map((specialty) => (
+              <button
+                key={specialty.id}
+                onClick={() => setSelectedSpecialty(specialty.name)}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedSpecialty === specialty.name
+                    ? "bg-blue-600 text-white"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+              >
+                {specialty.icon} {specialty.name}
+              </button>
+            ))}
           </div>
         </div>
-      </main>
-      <Footer />
-    </>
+      </div>
+
+      {/* Results */}
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredDoctors.map((doctor, index) => (
+            <DoctorCard key={doctor.id} doctor={doctor} index={index} />
+          ))}
+        </div>
+
+        {filteredDoctors.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-slate-500 text-lg">No doctors found matching your criteria.</p>
+            <Button
+              variant="link"
+              onClick={() => { setSearchQuery(""); setSelectedSpecialty(null) }}
+              className="mt-2 text-blue-600"
+            >
+              Clear all filters
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
