@@ -51,7 +51,7 @@ export default function DoctorsPage() {
             <button
               onClick={() => setSelectedSpecialty(null)}
               className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedSpecialty === null
-                  ? "bg-blue-600 text-white"
+                  ? "bg-green-600 text-white"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                 }`}
             >
@@ -62,7 +62,7 @@ export default function DoctorsPage() {
                 key={specialty.id}
                 onClick={() => setSelectedSpecialty(specialty.name)}
                 className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedSpecialty === specialty.name
-                    ? "bg-blue-600 text-white"
+                    ? "bg-green-600 text-white"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
               >
@@ -87,7 +87,7 @@ export default function DoctorsPage() {
             <Button
               variant="link"
               onClick={() => { setSearchQuery(""); setSelectedSpecialty(null) }}
-              className="mt-2 text-blue-600"
+              className="mt-2 text-green-600"
             >
               Clear all filters
             </Button>

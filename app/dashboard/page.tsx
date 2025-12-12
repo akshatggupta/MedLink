@@ -4,6 +4,9 @@ import { motion } from "framer-motion"
 import { Calendar, Activity, Pill, Clock, TrendingUp } from "lucide-react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/hooks/useAuth";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const healthData = [
   { name: "Mon", heartRate: 72, steps: 4000 },
@@ -21,16 +24,64 @@ const appointments = [
 ]
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+
+const roleData =
+  typeof window !== "undefined"
+    ? localStorage.getItem("medlink_user_role")
+    : null;
+
+const role = roleData ? JSON.parse(roleData).role : "Not assigned";
+
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-6xl">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Welcome back, Alex</h1>
+            <h1 className="text-3xl font-bold text-slate-900">Welcome back, {user?.displayName}</h1>
             <p className="text-slate-500">Here's your health overview for today.</p>
           </div>
-          <Button>Book New Appointment</Button>
+          <Link
+              href="/doctors"
+              className="px-8 py-4 rounded-full bg-[#22C55E] hover:bg-[#16A34A]
+text-white shadow-lg shadow-green-500/30
+ transition-all hover:scale-105 shadow-lg shadow-green-500/30 flex items-center gap-2"
+            >
+              Book Appointment
+              <ArrowRight className="w-4 h-4" />
+            </Link>
         </div>
+        {/* ✅ USER DETAILS GRID */}
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+    <p className="text-xs text-slate-500 mb-1">Full Name</p>
+    <p className="text-lg font-bold text-slate-900">
+      {user?.displayName || "Not provided"}
+    </p>
+  </div>
+
+  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+    <p className="text-xs text-slate-500 mb-1">Email</p>
+    <p className="text-sm font-medium text-slate-900 break-all">
+      {user?.email}
+    </p>
+  </div>
+
+  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+    <p className="text-xs text-slate-500 mb-1">User ID</p>
+    <p className="text-xs font-mono text-slate-700 break-all">
+      {user?.uid}
+    </p>
+  </div>
+
+  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+    <p className="text-xs text-slate-500 mb-1">Account Type</p>
+    <p className="text-lg font-bold text-green-600 capitalize">
+      {role}
+    </p>
+  </div>
+</div>
+
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -38,7 +89,7 @@ export default function DashboardPage() {
             { label: "Heart Rate", value: "72 bpm", icon: Activity, color: "text-red-500", bg: "bg-red-50" },
             { label: "Steps", value: "8,432", icon: TrendingUp, color: "text-green-500", bg: "bg-green-50" },
             { label: "Sleep", value: "7h 20m", icon: Clock, color: "text-purple-500", bg: "bg-purple-50" },
-            { label: "Medications", value: "2 Pending", icon: Pill, color: "text-blue-500", bg: "bg-blue-50" },
+            { label: "Medications", value: "2 Pending", icon: Pill, color: "text-green-500", bg: "bg-green-50" },
           ].map((stat, i) => (
             <motion.div
               key={i}
@@ -90,8 +141,8 @@ export default function DashboardPage() {
             <div className="space-y-4">
               {appointments.map((apt) => (
                 <div key={apt.id} className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                    <Calendar className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                    <Calendar className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-slate-900">{apt.doctor}</h4>

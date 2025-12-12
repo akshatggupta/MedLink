@@ -7,6 +7,8 @@ import { Navbar } from "@/components/layout/Navbar"
 import { Footer } from "@/components/layout/Footer"
 import { SmoothScroll } from "@/components/providers/SmoothScroll"
 import { FloatingAssistant } from "@/components/ai/FloatingAssistant"
+import { ThemeProvider } from "next-themes";
+import Providers from "@/components/Providers";
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -26,7 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+
       <body className={`${_geist.className} ${_geistMono.className} ${playfair.variable} antialiased bg-slate-50 text-slate-900`}>
+        <Providers>
+         <ThemeProvider attribute="class" defaultTheme="light">
         <AuthProvider>
           <SmoothScroll>
             <div className="flex flex-col min-h-screen">
@@ -40,6 +45,8 @@ export default function RootLayout({
           </SmoothScroll>
         </AuthProvider>
         <Analytics />
+        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   )

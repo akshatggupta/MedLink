@@ -8,7 +8,7 @@ export function Footer() {
 
                 {/* Brand */}
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 flex items-center justify-center bg-blue-600 rounded-lg">
+                    <div className="w-8 h-8 flex items-center justify-center bg-[#14532D] rounded-lg">
                         <Heart className="w-4 h-4 text-white" />
                     </div>
                     <span className="text-lg font-bold text-slate-900">MedLink</span>
@@ -16,10 +16,10 @@ export function Footer() {
 
                 {/* Links */}
                 <div className="flex flex-wrap justify-center gap-8 text-sm font-medium">
-                    <Link href="#" className="hover:text-blue-600 transition-colors">Pricing</Link>
-                    <Link href="#" className="hover:text-blue-600 transition-colors">Enterprise</Link>
-                    <Link href="#" className="hover:text-blue-600 transition-colors">Careers</Link>
-                    <Link href="#" className="hover:text-blue-600 transition-colors">Blog</Link>
+                    <Link href="#" className="hover:text-[#14532D] transition-colors">Pricing</Link>
+                    <Link href="#" className="hover:text-[#14532D] transition-colors">Enterprise</Link>
+                    <Link href="#" className="hover:text-[#14532D] transition-colors">Careers</Link>
+                    <Link href="#" className="hover:text-[#14532D] transition-colors">Blog</Link>
                 </div>
 
                 {/* Copyright */}

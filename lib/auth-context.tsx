@@ -1,99 +1,121 @@
-"use client"
+"use client";
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+  User,
+} from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
-export interface User {
-  id: string
-  email: string
-  name: string
-  role: "patient" | "doctor"
-  createdAt: string
-}
+// ---------------- TYPES ----------------
+
+type SignupRole = "patient" | "doctor";
 
 interface AuthContextType {
-  user: User | null
-  isLoading: boolean
-  login: (email: string, password: string) => Promise<void>
-  signup: (email: string, password: string, name: string, role: "patient" | "doctor") => Promise<void>
-  logout: () => void
+  user: User | null;
+  loading: boolean;
+  signup: (
+    email: string,
+    password: string,
+    name: string,
+    role: SignupRole
+  ) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+// ---------------- CONTEXT ----------------
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// ---------------- PROVIDER ----------------
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Check if user is logged in on mount
+  // ✅ Track session globally
   useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser))
-      } catch (error) {
-        console.error("Failed to parse stored user:", error)
-        localStorage.removeItem("user")
-      }
-    }
-    setIsLoading(false)
-  }, [])
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false);
+    });
 
-  const login = async (email: string, password: string) => {
-    setIsLoading(true)
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
+    return () => unsubscribe();
+  }, []);
 
-      // Mock authentication - in production, this would call your backend
-      const mockUser: User = {
-        id: "user-" + Date.now(),
-        email,
-        name: email.split("@")[0],
-        role: "patient",
-        createdAt: new Date().toISOString(),
-      }
+  // ✅ SIGNUP (with name + role)
+  const signup = async (
+    email: string,
+    password: string,
+    name: string,
+    role: SignupRole
+  ) => {
+    const result = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
-      setUser(mockUser)
-      localStorage.setItem("user", JSON.stringify(mockUser))
-    } finally {
-      setIsLoading(false)
-    }
-  }
+    // ✅ Save name in Firebase profile
+    await updateProfile(result.user, {
+      displayName: name,
+    });
 
-  const signup = async (email: string, password: string, name: string, role: "patient" | "doctor") => {
-    setIsLoading(true)
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      // Mock registration - in production, this would call your backend
-      const newUser: User = {
-        id: "user-" + Date.now(),
-        email,
-        name,
+    // ✅ Save role locally in browser (since you're not using DB)
+    localStorage.setItem(
+      "medlink_user_role",
+      JSON.stringify({
+        uid: result.user.uid,
         role,
-        createdAt: new Date().toISOString(),
-      }
+      })
+    );
 
-      setUser(newUser)
-      localStorage.setItem("user", JSON.stringify(newUser))
-    } finally {
-      setIsLoading(false)
-    }
-  }
+    setUser(result.user);
+  };
 
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem("user")
-  }
+  // ✅ LOGIN
+  const login = async (email: string, password: string) => {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    setUser(result.user);
+  };
 
-  return <AuthContext.Provider value={{ user, isLoading, login, signup, logout }}>{children}</AuthContext.Provider>
+  // ✅ LOGOUT
+  const logout = async () => {
+    await signOut(auth);
+    localStorage.removeItem("medlink_user_role");
+    setUser(null);
+  };
+
+  const value: AuthContextType = {
+    user,
+    loading,
+    signup,
+    login,
+    logout,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+// ---------------- HOOK ----------------
+
 export function useAuth() {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth must be used inside AuthProvider");
   }
-  return context
+
+  return context;
 }

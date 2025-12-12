@@ -65,13 +65,13 @@ export function ChatInterface() {
     return (
         <div className="flex flex-col h-[600px] bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-4 flex items-center gap-3 text-white">
+            <div className="bg-gradient-to-r from-green-600 to-cyan-500 p-4 flex items-center gap-3 text-white">
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
                     <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
                     <h3 className="font-bold">MedLink AI</h3>
-                    <p className="text-xs text-blue-100 flex items-center gap-1">
+                    <p className="text-xs text-green-100 flex items-center gap-1">
                         <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                         Online
                     </p>
@@ -93,11 +93,11 @@ export function ChatInterface() {
                         <div
                             className={cn(
                                 "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                                message.role === "user" ? "bg-blue-100" : "bg-cyan-100"
+                                message.role === "user" ? "bg-green-100" : "bg-cyan-100"
                             )}
                         >
                             {message.role === "user" ? (
-                                <User className="w-4 h-4 text-blue-600" />
+                                <User className="w-4 h-4 text-green-600" />
                             ) : (
                                 <Bot className="w-4 h-4 text-cyan-600" />
                             )}
@@ -106,7 +106,7 @@ export function ChatInterface() {
                             className={cn(
                                 "p-3 rounded-2xl text-sm leading-relaxed shadow-sm",
                                 message.role === "user"
-                                    ? "bg-blue-600 text-white rounded-tr-none"
+                                    ? "bg-green-600 text-white rounded-tr-none"
                                     : "bg-white text-slate-700 rounded-tl-none border border-slate-100"
                             )}
                         >
@@ -147,12 +147,12 @@ export function ChatInterface() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Type your health question..."
-                        className="flex-grow rounded-full bg-slate-50 border-slate-200 focus-visible:ring-blue-500"
+                        className="flex-grow rounded-full bg-slate-50 border-slate-200 focus-visible:ring-green-500"
                     />
                     <Button
                         type="submit"
                         size="icon"
-                        className="rounded-full bg-blue-600 hover:bg-blue-700 w-10 h-10 shrink-0"
+                        className="rounded-full bg-green-600 hover:bg-green-700 w-10 h-10 shrink-0"
                         disabled={!input.trim() || isTyping}
                     >
                         <Send className="w-4 h-4" />

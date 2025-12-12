@@ -24,8 +24,8 @@ const features = [
         ),
     },
     {
-        title: "Smart Prescriptions",
-        description: "Digital prescriptions sent directly to your preferred pharmacy. Track refills and get reminders automatically.",
+        title: "Chat & Book",
+        description: "Chat with our health assistant and book appointments directly with your preferred doctor.",
         content: (
             <div className="h-full w-full bg-gradient-to-br from-orange-400 to-red-400 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-xl">
                 Rx Management UI

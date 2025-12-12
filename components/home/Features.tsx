@@ -8,7 +8,7 @@ const features = [
         icon: Calendar,
         title: "Instant Booking",
         description: "Book appointments with top specialists in seconds. Real-time availability.",
-        color: "bg-blue-500",
+        color: "bg-green-500",
     },
     {
         icon: Shield,
@@ -51,7 +51,7 @@ export function Features() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1, duration: 0.5 }}
-                            className="group p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-100 hover:border-blue-100 hover:shadow-xl transition-all duration-300"
+                            className="group p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-100 hover:border-green-100 hover:shadow-xl transition-all duration-300"
                         >
                             <div className={`w-12 h-12 rounded-xl ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                                 <feature.icon className="w-6 h-6 text-white" />

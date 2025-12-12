@@ -5,20 +5,22 @@ import { ShoppingCart, Plus, Star } from "lucide-react"
 import { Medicine } from "@/lib/mock-data"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import { useCart } from "@/lib/cart-context"  
 
 interface ProductCardProps {
     product: Medicine
     index?: number
 }
 
-export function ProductCard({ product, index = 0 }: ProductCardProps) {
+    export function ProductCard({ product, index = 0 }: ProductCardProps) {
+    const { addToCart } = useCart();
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            whileInView={{ opacity: 1, scale: 1 }}  
             viewport={{ once: true }}
             transition={{ delay: index * 0.05, duration: 0.4 }}
-            className="bg-white rounded-2xl p-4 border border-slate-100 hover:shadow-xl hover:border-blue-100 transition-all duration-300 group"
+            className="bg-white rounded-2xl p-4 border border-slate-100 hover:shadow-xl hover:border-green-100 transition-all duration-300 group"
         >
             <div className="relative h-48 mb-4 rounded-xl overflow-hidden bg-slate-50 flex items-center justify-center">
                 {/* Placeholder for product image */}
@@ -36,7 +38,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             <div className="space-y-2">
                 <div className="flex justify-between items-start">
                     <div>
-                        <p className="text-xs text-blue-600 font-medium mb-1">{product.category}</p>
+                        <p className="text-xs text-green-600 font-medium mb-1">{product.category}</p>
                         <h3 className="font-bold text-slate-900 line-clamp-1">{product.name}</h3>
                     </div>
                     <div className="flex items-center gap-1 text-yellow-500 text-xs font-medium">
@@ -53,8 +55,16 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                     <span className="text-lg font-bold text-slate-900">${product.price.toFixed(2)}</span>
                     <Button
                         size="sm"
-                        className="rounded-full w-8 h-8 p-0 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
+                        className="rounded-full w-8 h-8 p-0 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-colors"
                         disabled={!product.inStock}
+                        onClick={() =>
+    addToCart({
+      id: String(product.id),           // ensure string
+      name: product.name,
+      price: product.price,
+      image: undefined,                 // you can pass real image later
+    })
+  }
                     >
                         <Plus className="w-4 h-4" />
                     </Button>

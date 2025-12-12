@@ -18,7 +18,6 @@ export default function LoginPage() {
           </p>
         </div>
       </main>
-      <Footer />
     </>
   )
 }

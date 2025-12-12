@@ -23,7 +23,7 @@ export function FloatingAssistant() {
                     >
                         <Button
                             asChild
-                            className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 shadow-lg hover:shadow-xl hover:scale-105 transition-all p-0"
+                            className="h-14 w-14 rounded-full bg-gradient-to-r from-green-600 to-cyan-500 shadow-lg hover:shadow-xl hover:scale-105 transition-all p-0"
                         >
                             <Link href="/ai-assistant">
                                 <Sparkles className="w-6 h-6 text-white animate-pulse" />

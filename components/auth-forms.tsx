@@ -1,40 +1,44 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useAuth } from "@/lib/auth-context";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { useAuth } from "@/lib/auth-context"
-
+// ---------------------------
+// LOGIN FORM
+// ---------------------------
 interface LoginFormProps {
-  onSuccess?: () => void
+  onSuccess?: () => void;
 }
 
 export function LoginForm({ onSuccess }: LoginFormProps) {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const { login } = useAuth()
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { login } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
     try {
-      await login(email, password)
-      onSuccess?.()
-      router.push("/dashboard")
+      await login(email, password);
+      onSuccess?.();
+      router.push("/dashboard");
     } catch (err) {
-      setError("Failed to login. Please try again.")
+      console.error(err);
+      setError("Failed to login. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Card className="p-6 w-full max-w-md">
@@ -65,45 +69,51 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           />
         </div>
 
-        {error && <div className="text-sm text-destructive">{error}</div>}
+        {error && <div className="text-sm text-red-500">{error}</div>}
 
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Logging in..." : "Login"}
         </Button>
       </form>
     </Card>
-  )
+  );
 }
 
+// ---------------------------
+// SIGNUP FORM
+// ---------------------------
+
 interface SignupFormProps {
-  onSuccess?: () => void
+  onSuccess?: () => void;
 }
 
 export function SignupForm({ onSuccess }: SignupFormProps) {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [name, setName] = useState("")
-  const [role, setRole] = useState<"patient" | "doctor">("patient")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const { signup } = useAuth()
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [role, setRole] = useState<"patient" | "doctor">("patient");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { signup } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
     try {
-      await signup(email, password, name, role)
-      onSuccess?.()
-      router.push("/dashboard")
+      await signup(email, password, name, role);
+      onSuccess?.();
+      router.push("/dashboard");
     } catch (err) {
-      setError("Failed to create account. Please try again.")
+      console.error(err);
+      setError("Failed to create account. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Card className="p-6 w-full max-w-md">
@@ -158,12 +168,12 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
           </select>
         </div>
 
-        {error && <div className="text-sm text-destructive">{error}</div>}
+        {error && <div className="text-sm text-red-500">{error}</div>}
 
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Creating account..." : "Sign Up"}
         </Button>
       </form>
     </Card>
-  )
+  );
 }

@@ -51,7 +51,7 @@ export default function SymptomsPage() {
       case "medium":
         return <AlertCircle className="text-yellow-500" size={32} />
       default:
-        return <Info className="text-blue-500" size={32} />
+        return <Info className="text-green-500" size={32} />
     }
   }
 
@@ -62,7 +62,7 @@ export default function SymptomsPage() {
       case "medium":
         return "bg-yellow-500/10 border-yellow-500/30"
       default:
-        return "bg-blue-500/10 border-blue-500/30"
+        return "bg-green-500/10 border-green-500/30"
     }
   }
 
