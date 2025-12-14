@@ -36,7 +36,7 @@ export function ChatInterface() {
     }, [messages, isTyping])
 
     const handleSend = async () => {
-        if (!input.trim()) return
+        if (!input.trim() || isTyping) return
 
         const userMessage: Message = {
             id: Date.now().toString(),
@@ -46,20 +46,42 @@ export function ChatInterface() {
         }
 
         setMessages((prev) => [...prev, userMessage])
+        const userInput = input.trim()
         setInput("")
         setIsTyping(true)
 
-        // Simulate AI response
-        setTimeout(() => {
+        try {
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userInput }),
+            })
+
+            const data = await response.json()
+
+            if (!response.ok || data.error) {
+                throw new Error(data.error || "Failed to get response")
+            }
+
             const aiMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 role: "assistant",
-                content: "I understand. Please note that I am an AI and not a doctor. However, based on what you've told me, it sounds like you might be experiencing common symptoms. I recommend consulting with a specialist if symptoms persist.",
+                content: data.response || "Sorry, I couldn't generate a response. Please try again.",
                 timestamp: new Date(),
             }
             setMessages((prev) => [...prev, aiMessage])
+        } catch (error: any) {
+            console.error("Failed to send message:", error)
+            const errorMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                role: "assistant",
+                content: error.message || "Sorry, I encountered an error. Please make sure your GEMINI_API_KEY is configured and try again.",
+                timestamp: new Date(),
+            }
+            setMessages((prev) => [...prev, errorMessage])
+        } finally {
             setIsTyping(false)
-        }, 1500)
+        }
     }
 
     return (

@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono, Playfair_Display } from "next/font/google"
+import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/lib/auth-context"
 import { Navbar } from "@/components/layout/Navbar"
@@ -13,7 +13,6 @@ import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" })
 
 export const metadata: Metadata = {
   title: "HealthCare - Find & Book Doctors",
@@ -29,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
 
-      <body className={`${_geist.className} ${_geistMono.className} ${playfair.variable} antialiased bg-slate-50 text-slate-900`}>
+      <body className={`${_geist.className} ${_geistMono.className} antialiased bg-slate-50 text-slate-900`}>
         <Providers>
          <ThemeProvider attribute="class" defaultTheme="light">
         <AuthProvider>

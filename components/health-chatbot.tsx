@@ -67,7 +67,7 @@ export function HealthChatbot() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!input.trim()) return
+    if (!input.trim() || isLoading) return
 
     // Add user message
     const userMessage: Message = {
@@ -78,20 +78,42 @@ export function HealthChatbot() {
     }
 
     setMessages((prev) => [...prev, userMessage])
+    const userInput = input.trim()
     setInput("")
     setIsLoading(true)
 
-    // Simulate bot response delay
-    setTimeout(() => {
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userInput }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || data.error) {
+        throw new Error(data.error || "Failed to get response")
+      }
+
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: getBotResponse(input),
+        text: data.response || "Sorry, I couldn't generate a response. Please try again.",
         sender: "bot",
         timestamp: new Date(),
       }
       setMessages((prev) => [...prev, botMessage])
+    } catch (error: any) {
+      console.error("Failed to send message:", error)
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: error.message || "Sorry, I encountered an error. Please make sure your GEMINI_API_KEY is configured and try again.",
+        sender: "bot",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
       setIsLoading(false)
-    }, 500)
+    }
   }
 
   return (
