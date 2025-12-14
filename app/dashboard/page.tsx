@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { Calendar, Activity, Pill, Clock, TrendingUp } from "lucide-react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/lib/auth-context";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -26,12 +26,12 @@ const appointments = [
 export default function DashboardPage() {
   const { user } = useAuth();
 
-const roleData =
-  typeof window !== "undefined"
-    ? localStorage.getItem("medlink_user_role")
-    : null;
+  const roleData =
+    typeof window !== "undefined"
+      ? localStorage.getItem("medlink_user_role")
+      : null;
 
-const role = roleData ? JSON.parse(roleData).role : "Not assigned";
+  const role = roleData ? JSON.parse(roleData).role : "Not assigned";
 
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-20 px-4 sm:px-6 lg:px-8">
@@ -42,45 +42,45 @@ const role = roleData ? JSON.parse(roleData).role : "Not assigned";
             <p className="text-slate-500">Here's your health overview for today.</p>
           </div>
           <Link
-              href="/doctors"
-              className="px-8 py-4 rounded-full bg-[#22C55E] hover:bg-[#16A34A]
+            href="/doctors"
+            className="px-8 py-4 rounded-full bg-[#22C55E] hover:bg-[#16A34A]
 text-white shadow-lg shadow-green-500/30
  transition-all hover:scale-105 shadow-lg shadow-green-500/30 flex items-center gap-2"
-            >
-              Book Appointment
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+          >
+            Book Appointment
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
         {/* ✅ USER DETAILS GRID */}
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-    <p className="text-xs text-slate-500 mb-1">Full Name</p>
-    <p className="text-lg font-bold text-slate-900">
-      {user?.displayName || "Not provided"}
-    </p>
-  </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+            <p className="text-xs text-slate-500 mb-1">Full Name</p>
+            <p className="text-lg font-bold text-slate-900">
+              {user?.displayName || "Not provided"}
+            </p>
+          </div>
 
-  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-    <p className="text-xs text-slate-500 mb-1">Email</p>
-    <p className="text-sm font-medium text-slate-900 break-all">
-      {user?.email}
-    </p>
-  </div>
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+            <p className="text-xs text-slate-500 mb-1">Email</p>
+            <p className="text-sm font-medium text-slate-900 break-all">
+              {user?.email}
+            </p>
+          </div>
 
-  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-    <p className="text-xs text-slate-500 mb-1">User ID</p>
-    <p className="text-xs font-mono text-slate-700 break-all">
-      {user?.uid}
-    </p>
-  </div>
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+            <p className="text-xs text-slate-500 mb-1">User ID</p>
+            <p className="text-xs font-mono text-slate-700 break-all">
+              {user?.uid}
+            </p>
+          </div>
 
-  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-    <p className="text-xs text-slate-500 mb-1">Account Type</p>
-    <p className="text-lg font-bold text-green-600 capitalize">
-      {role}
-    </p>
-  </div>
-</div>
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+            <p className="text-xs text-slate-500 mb-1">Account Type</p>
+            <p className="text-lg font-bold text-green-600 capitalize">
+              {role}
+            </p>
+          </div>
+        </div>
 
 
         {/* Stats Grid */}

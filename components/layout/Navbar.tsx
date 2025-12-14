@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useAuth } from "@/hooks/useAuth"   // ✅ AUTH ADDED
+import { useAuth } from "@/lib/auth-context"   // ✅ AUTH ADDED
 
 const navItems = [
   { name: "Home", href: "/" },
