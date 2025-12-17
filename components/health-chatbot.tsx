@@ -106,7 +106,7 @@ export function HealthChatbot() {
       console.error("Failed to send message:", error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: error.message || "Sorry, I encountered an error. Please make sure your GEMINI_API_KEY is configured and try again.",
+        text: error.message || "Sorry, I encountered an error. Please make sure your GROQ_API_KEY is configured and try again.",
         sender: "bot",
         timestamp: new Date(),
       }
@@ -129,11 +129,10 @@ export function HealthChatbot() {
         {messages.map((message) => (
           <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-xs px-4 py-2 rounded-lg ${
-                message.sender === "user"
+              className={`max-w-xs px-4 py-2 rounded-lg ${message.sender === "user"
                   ? "bg-primary text-primary-foreground rounded-br-none"
                   : "bg-muted text-foreground rounded-bl-none"
-              }`}
+                }`}
             >
               <p className="text-sm">{message.text}</p>
             </div>

@@ -8,7 +8,7 @@ const nextConfig = {
   },
   // Explicitly load environment variables
   env: {
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
   },
 }
 

@@ -75,7 +75,7 @@ export function ChatInterface() {
             const errorMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 role: "assistant",
-                content: error.message || "Sorry, I encountered an error. Please make sure your GEMINI_API_KEY is configured and try again.",
+                content: error.message || "Sorry, I encountered an error. Please make sure your GROQ_API_KEY is configured and try again.",
                 timestamp: new Date(),
             }
             setMessages((prev) => [...prev, errorMessage])

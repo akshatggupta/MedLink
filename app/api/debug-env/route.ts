@@ -7,15 +7,15 @@ export async function GET() {
     }
 
     // Next.js automatically loads .env.local
-    const geminiKey = process.env.GEMINI_API_KEY;
-    
+    const groqKey = process.env.GROQ_API_KEY;
+
     return NextResponse.json({
-        hasGeminiKey: !!geminiKey,
-        geminiKeyLength: geminiKey?.length || 0,
-        geminiKeyPrefix: geminiKey ? geminiKey.substring(0, 10) + "..." : "NOT SET",
+        hasGroqKey: !!groqKey,
+        groqKeyLength: groqKey?.length || 0,
+        groqKeyPrefix: groqKey ? groqKey.substring(0, 10) + "..." : "NOT SET",
         nodeEnv: process.env.NODE_ENV,
-        allEnvKeysWithGemini: Object.keys(process.env)
-            .filter(key => key.includes('GEMINI') || key.includes('API'))
+        allEnvKeysWithGroq: Object.keys(process.env)
+            .filter(key => key.includes('GROQ') || key.includes('API'))
             .map(key => ({
                 key,
                 hasValue: !!process.env[key],

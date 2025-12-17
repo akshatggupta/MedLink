@@ -3,130 +3,114 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
     try {
         const { message } = await req.json();
-        
-        if (!message || typeof message !== "string" || message.trim().length === 0) {
+
+        if (!message || typeof message !== "string") {
             return NextResponse.json(
-                { error: "Message is required and must be a non-empty string" },
+                { error: "Message is required" },
                 { status: 400 }
             );
         }
 
-        // Get API key - Next.js automatically loads .env.local
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = process.env.GROQ_API_KEY;
 
-        if (!apiKey || apiKey.length < 20) {
+        if (!apiKey) {
             return NextResponse.json(
-                { error: "API key not configured or invalid. Please set GEMINI_API_KEY in your environment variables." },
+                { error: "GROQ_API_KEY not configured" },
                 { status: 500 }
             );
         }
 
-        const trimmedApiKey = apiKey.trim();
-
-        // Build the prompt
-        const prompt = `You are a knowledgeable and helpful medical AI assistant for MedLink. 
-Your goal is to provide clear, accurate, and supportive medical information.
-
-When answering user questions:
-1. Provide detailed and helpful information about symptoms, potential causes, and general treatments or home remedies.
-2. Be empathetic and professional.
-3. Use clear formatting with bullet points if helpful.
-4. Focus on general health information and education.
-
-IMPORTANT: You must ALWAYS conclude your response with a brief disclaimer that you are an AI and this is not a substitute for professional medical advice. Always recommend consulting with a healthcare professional for serious or persistent symptoms.
-
-If the user asks about non-medical topics (like coding, sports, entertainment), politely decline and explain you can only assist with health-related queries.
-
-User Question: ${message.trim()}`;
-
-        // Try REST API directly (most reliable method)
-        // Try multiple model variations in order of preference
-        const modelsToTry = [
-            'gemini-1.5-flash-latest',
-            'gemini-1.5-flash',
-            'gemini-1.5-pro-latest',
-            'gemini-1.5-pro'
+        // Check if the message is medical-related
+        const medicalKeywords = [
+            'symptom', 'pain', 'fever', 'headache', 'sick', 'disease', 'treatment',
+            'medicine', 'doctor', 'health', 'injury', 'hurt', 'ache', 'infection',
+            'cough', 'cold', 'flu', 'nausea', 'vomit', 'diarrhea', 'rash', 'swelling',
+            'bleeding', 'dizzy', 'fatigue', 'tired', 'weak', 'medication', 'prescription',
+            'diagnosis', 'condition', 'chest', 'stomach', 'throat', 'ear', 'eye',
+            'allergy', 'breathing', 'heart', 'blood', 'pressure', 'diabetes', 'cancer',
+            'covid', 'vaccine', 'virus', 'bacteria', 'medical', 'hospital', 'clinic',
+            'should i see', 'what causes', 'how to treat', 'is it normal', 'remedy'
         ];
 
-        let lastError: any = null;
-        let lastStatusCode = 0;
-
-        for (const modelName of modelsToTry) {
-            try {
-                console.log(`Trying model: ${modelName}`);
-                const restResponse = await fetch(
-                    `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${trimmedApiKey}`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [{
-                                    text: prompt
-                                }]
-                            }],
-                            generationConfig: {
-                                temperature: 0.7,
-                                topP: 0.8,
-                                topK: 40,
-                            }
-                        })
-                    }
-                );
-
-                if (restResponse.ok) {
-                    const data = await restResponse.json();
-                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    
-                    if (text) {
-                        console.log(`✓ Success with ${modelName}`);
-                        return NextResponse.json({ response: text });
-                    }
-                } else {
-                    // Capture error for this attempt
-                    const errorText = await restResponse.text();
-                    try {
-                        lastError = JSON.parse(errorText);
-                    } catch {
-                        lastError = { message: errorText || restResponse.statusText };
-                    }
-                    lastStatusCode = restResponse.status;
-                    console.log(`✗ ${modelName} failed: ${lastError.error?.message || lastError.message || restResponse.statusText}`);
-                }
-            } catch (fetchError: any) {
-                console.error(`Error trying ${modelName}:`, fetchError.message);
-                lastError = { message: fetchError.message };
-            }
-        }
-
-        // If all models failed, return the last error
-        const errorMessage = lastError?.error?.message || lastError?.message || "All model attempts failed";
-        const statusCode = lastStatusCode || 500;
-
-        console.error("API Error:", {
-            status: statusCode,
-            message: errorMessage,
-            fullError: lastError
-        });
-
-        return NextResponse.json(
-            { 
-                error: `API request failed: ${errorMessage}`,
-                status: statusCode,
-                details: lastError,
-                suggestion: "Please check your API key at https://aistudio.google.com/app/apikey and ensure it has access to Gemini models"
-            },
-            { status: statusCode || 500 }
+        const messageLower = message.toLowerCase();
+        const isMedicalQuery = medicalKeywords.some(keyword =>
+            messageLower.includes(keyword)
         );
 
+        if (!isMedicalQuery) {
+            return NextResponse.json({
+                response: "I'm a medical assistant and can only help with health-related questions. Please ask me about symptoms, conditions, or general health concerns."
+            });
+        }
+
+        const groqRes = await fetch(
+            "https://api.groq.com/openai/v1/chat/completions",
+            {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${apiKey}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    model: "llama-3.1-8b-instant",
+                    messages: [
+                        {
+                            role: "system",
+                            content: `You are a strict medical assistant. Follow these rules:
+
+STRICT RULES:
+1. ONLY answer medical and health-related questions
+2. If asked about jokes, stories, code, math, or anything non-medical, respond EXACTLY with: "I can only help with medical and health questions."
+3. Keep medical responses SHORT (3-5 sentences max)
+4. Use simple, clear language
+5. Always end with: "⚠️ Consult a healthcare professional for proper diagnosis and treatment."
+6. Never diagnose or prescribe specific medications
+7. DO NOT engage with non-medical topics under any circumstances
+
+If the question is not about health, symptoms, conditions, treatments, or medical concerns, refuse politely.`
+                        },
+                        {
+                            role: "user",
+                            content: message,
+                        },
+                    ],
+                    temperature: 0.3,
+                    max_tokens: 200,
+                }),
+            }
+        );
+
+        if (!groqRes.ok) {
+            const errText = await groqRes.text();
+            console.error("❌ Groq API failed:", groqRes.status, errText);
+
+            return NextResponse.json(
+                {
+                    error: "Groq API error",
+                    details: errText,
+                    statusCode: groqRes.status
+                },
+                { status: 500 }
+            );
+        }
+
+        const data = await groqRes.json();
+        const text = data?.choices?.[0]?.message?.content;
+
+        if (!text) {
+            return NextResponse.json({
+                response: "No response received. Please try again.",
+            });
+        }
+
+        return NextResponse.json({ response: text });
+
     } catch (error: any) {
-        console.error("Chat API Error:", error);
+        console.error("❌ Server Error:", error.message);
         return NextResponse.json(
-            { 
-                error: error.message || "Failed to process request",
-                suggestion: "Check server console for details"
+            {
+                error: "Internal server error",
+                message: error.message
             },
             { status: 500 }
         );

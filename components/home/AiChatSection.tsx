@@ -79,7 +79,7 @@ export function AiChatSection() {
                             transition={{ delay: 0.2 }}
                             className="text-muted-foreground"
                         >
-                            Ask any medical questions and get instant, reliable answers powered by Gemini AI.
+                            Ask any medical questions and get instant, reliable answers powered by Groq AI.
                         </motion.p>
                     </div>
 
